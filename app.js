@@ -21,25 +21,25 @@ sequelize.sync({ alter: true }).then(() => {
   }).catch((error) => {
     console.error('Грешка при създаване на базата данни и таблицата:', error);
   } );
-// app.post('api/login', async (req, res) => {
-//     try {
-//       const { username, password } = req.body;
+app.post('api/login', async (req, res) => {
+    try {
+      const { username, password } = req.body;
   
-//       // Проверка на потребителя в базата данни (заменете това със собствената логика)
-//       if (username === 'user' && password === 'password') {
-//         // Генериране на JWT токен
-//         // const token = jwt.sign({ user: username }, jwtSecret);
+      // Проверка на потребителя в базата данни (заменете това със собствената логика)
+      if (username === 'user' && password === 'password') {
+        // Генериране на JWT токен
+        // const token = jwt.sign({ user: username }, jwtSecret);
   
-//         // Връщане на токена и съобщение за успешен вход
-//         res.json({  message: 'Успешен вход' });
-//       } else {
-//         res.status(401).json({ message: 'Грешно потребителско име или парола' });
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).json({ error: 'Грешка при вход' });
-//     }
-//   });
+        // Връщане на токена и съобщение за успешен вход
+        res.json({  message: 'Успешен вход' });
+      } else {
+        res.status(401).json({ message: 'Грешно потребителско име или парола' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Грешка при вход' });
+    }
+  });
   app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   });
