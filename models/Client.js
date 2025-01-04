@@ -6,23 +6,23 @@ const sequelize = require('../sequelizeConfig');
 const Client = sequelize.define("client", {
     name: {
         type: DataTypes.STRING,
-        allowNull: false,
+      //  allowNull: false,
     },
     lastName: {
         type: DataTypes.STRING,
-        allowNull: false,
+       // allowNull: false,
     },
     egn: {
         type: DataTypes.BIGINT,
-        allowNull: false,
+     //   allowNull: false,
     },
     phoneNumber: {
         type: DataTypes.BIGINT,
-        allowNull: false,
+//allowNull: false,
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false,
+     //   allowNull: false,
     },
 },
 {

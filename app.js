@@ -4,7 +4,7 @@ const cors = require('cors');
 const sequelize = require('./sequelizeConfig'); // Импорт на конфигурацията за Sequelize
 const authRoutes = require('./routes/auth.js');
 // const User = require('./models/User ');
-const clientRoutes = require('./models/Client.js');
+const Client = require('./models/Client.js');
 
 
 
@@ -15,7 +15,7 @@ const port = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/auth', authRoutes);
-app.use('/client', clientRoutes);
+app.use('/client', Client);
 
 sequelize.sync({ alter: true }).then(() => {
     console.log('Базата данни и таблицата са създадени успешно.');
@@ -41,40 +41,47 @@ app.post('api/login', async (req, res) => {
       res.status(500).json({ error: 'Грешка при вход' });
     }
   });
-  app.post('/api/client', async (req, res) => {
-    try {
-      const { name, lastName, egn, phoneNumber, email } = req.body;
 
-      // Проверка дали клиент с тези данни вече съществува
-      const existingClient = await Client.findOne({
-        where: {
-          egn: egn,
-          phoneNumber: phoneNumber,
-          email: email,
-        }
-      });
+app.post('/api/registerClient', async (req, res) => {
+  try {
+    const { name, lastName, egn, phoneNumber, email } = req.body;
 
-      if (existingClient) {
-        return res.status(400).json({ message: 'Клиент с тези данни вече съществува' });
-      }
-
-      // Създаване на нов клиент в базата данни
-      const newClient = await Client.createClient(name, lastName, egn, phoneNumber, email);
-      res.status(201).json({ message: 'Регистрацията беше успешна' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Грешка при регистрация' });
+    if (!name || !lastName || !egn || !phoneNumber || !email) {
+      return res.status(400).json({ error: 'Моля, попълнете всички полета' });
     }
-  });
-  app.get('/api/client', async (req, res) => {
-    try {
-      const clients = await Client.findAll();
-      res.json(clients);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+
+    const existingClient = await Client.findOne({
+      where: {
+        egn,
+      },
+    });
+
+    if (existingClient) {
+      return res.status(400).json({ error: 'Такъв клиент вече съществува' });
     }
-  });
+
+    const newClient = await Client.create({
+      name,
+      lastName,
+      egn,
+      phoneNumber,
+      email,
+    });
+    res.json(newClient);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Грешка при създаване на клиента' });
+  }
+});
+  // app.get('/api/client', async (req, res) => {
+  //   try {
+  //     const clients = await Client.findAll();
+  //     res.json(clients);
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ error: 'Internal Server Error' });
+  //   }
+  // });
   
   app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
