@@ -5,7 +5,7 @@ const RegisteredUser = require('../models/User.js');
 // Маршрут за регистрация на нов потребител
 router.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password,name, middleName, lastName } = req.body;
 
     // Проверка дали потребител с този потребителско име вече съществува
     const existingUser = await RegisteredUser.findOne({
@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Създаване на нов потребител в базата данни
-    const newUser = await RegisteredUser.createUser(username, password);
+    const newUser = await RegisteredUser.createUser(username, password,name, middleName, lastName);
 
     res.status(201).json({ message: 'Регистрацията беше успешна' });
   } catch (error) {
