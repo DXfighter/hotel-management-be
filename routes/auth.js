@@ -35,28 +35,20 @@ router.post('/login', async (req, res) => {
     const user = await RegisteredUser.findOne({
       where: {
         username: username,
-        password: password // Предполагаме, че паролата се съхранява в хеширан вид в базата данни
+        password: password
       }
     });
 
     if (user) {
-      // Генерирайте JWT токен
-      // const token = generateJWTToken(user.id);
-
-      // Влизане успешно - върнете статус 200, JWT токен и съобщение за успешен вход
-      res.status(200).json({ message: 'Успешен вход' });
+      res.status(200).json({ message: 'Успешен вход', user: user.get('id'), role: user.get('role') });
     } else {
-      // Невалидни данни за вход - върнете статус 401 и съобщение за грешка
       res.status(401).json({ message: 'Грешно потребителско име или парола' });
-    
-    
     }
   } catch (error) {
     console.error(error);
-    // Грешка при обработка на заявката - върнете статус 500 и съобщение за грешка
+
     res.status(500).json({ error: 'Грешка при вход' });
   }
 });
-
 
 module.exports = router;

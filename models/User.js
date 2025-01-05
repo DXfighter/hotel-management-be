@@ -15,42 +15,35 @@ const User = sequelize.define('User', {
   },
 
   name: { type: DataTypes.STRING,
-    //  allowNull: false 
   },
   
   middleName:  {
     type: DataTypes.STRING,
-    // allowNull: false 
   },
 
   lastName: { 
     type: DataTypes.STRING,
-    // allowNull: false 
   },
 
   egn: {
-    type: DataTypes.BIGINT,
-    // allowNull: false
+    type: DataTypes.STRING,
   },
   
-  pheneNumber: {
-    type: DataTypes.BIGINT,
-    // allowNull: false
+  phoneNumber: {
+    type: DataTypes.STRING,
   },
   
   email: {
     type: DataTypes.STRING,
-    // allowNull: false
   },
 
   startWorkDate: {
     type: DataTypes.DATE,
-    // allowNull: false
   },
 
-  accauntStatus: {
+  isActive: {
     type: DataTypes.BOOLEAN,
-    // allowNull: false
+    defaultValue: true
   },
 
   endWorkDate: {
@@ -59,18 +52,16 @@ const User = sequelize.define('User', {
   },
 
   role: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM('admin', 'employee'),
       allowNull: true,
     },
 },
- {
-    tableName: 'registered_users' ,
-    timestamps: false 
-  });
-  
-  
+{
+  tableName: 'users' ,
+  timestamps: false 
+});
 
-User.createUser = async function (username, password, name, middleName, lastName, egn, pheneNumber, email, startWorkDate, accauntStatus, role) {
+User.createUser = async function (username, password, name, middleName, lastName, egn, phoneNumber, email, startWorkDate, isActive, role) {
   try {
     const user = await this.create({
       username,
@@ -79,12 +70,13 @@ User.createUser = async function (username, password, name, middleName, lastName
       middleName,
       lastName, 
       egn,
-      pheneNumber,
+      phoneNumber,
       email,
       startWorkDate,
-      accauntStatus,
-      role
+      isActive,
+      role: role ?? 'employee'
     });
+
     return user;
   } catch (error) {
     throw error;
@@ -92,4 +84,3 @@ User.createUser = async function (username, password, name, middleName, lastName
 };
 
 module.exports = User;
-

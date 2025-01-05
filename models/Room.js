@@ -3,59 +3,47 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelizeConfig');
 
 const Room = sequelize.define('Room', {
-number: {
+  number: {
     type: DataTypes.BIGINT,
-    // allowNull: false
-},
-    
+  },
 
-capacity: {
+  capacity: {
     type: DataTypes.BIGINT,
     allowNull: false,
   },
 
   type: { type: DataTypes.STRING,
-    //  allowNull: false 
   },
   
-  status:  {
-    type: DataTypes.STRING,
-    // allowNull: false 
+  isFree:  {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   },
 
   priceAdult: { 
     type: DataTypes.BIGINT,
-    // allowNull: false 
   },
 
-  priceChaild: {
+  priceChild: {
     type: DataTypes.BIGINT,
-    // allowNull: false
   },
-  
-
-
-  
 },
- {
-    tableName: 'rooms' ,
-    timestamps: false 
-  });
-  
-  
+{
+  tableName: 'rooms',
+  timestamps: false 
+});
 
-Room.createRoom = async function (number, capacity, type, status, priceAdult, priceChaild) {
+Room.createRoom = async function (number, capacity, type, status, priceAdult, priceChild) {
   try {
     const room = await this.create({
       number,
       capacity,
       type,
-      status,
+      isFree: status ?? true,
       priceAdult,
-      priceChaild,
-    
-
+      priceChild
     });
+
     return room;
   } catch (error) {
     throw error;
@@ -63,5 +51,3 @@ Room.createRoom = async function (number, capacity, type, status, priceAdult, pr
 };
 
 module.exports = Room;
-
-

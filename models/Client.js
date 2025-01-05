@@ -5,44 +5,40 @@ const sequelize = require('../sequelizeConfig');
 
 const Client = sequelize.define("client", {
     name: {
-        type: DataTypes.STRING,
-      //  allowNull: false,
+      type: DataTypes.STRING,
     },
     lastName: {
-        type: DataTypes.STRING,
-       // allowNull: false,
-    },
-    egn: {
-        type: DataTypes.BIGINT,
-     //   allowNull: false,
+      type: DataTypes.STRING,
     },
     phoneNumber: {
-        type: DataTypes.BIGINT,
-//allowNull: false,
+      type: DataTypes.STRING,
     },
     email: {
-        type: DataTypes.STRING,
-     //   allowNull: false,
+      type: DataTypes.STRING,
     },
+    isAdult: {
+      type: DataTypes.BOOLEAN
+    }
 },
 {
-    tableName: 'registered_clients', // Тук променете името на таблицата
-    timestamps: false // Деактивиране на timestamps
-  } );
+  tableName: 'registered_clients',
+  timestamps: false
+});
 
-  Client.createClient = async function (name, lastName, egn, phoneNumber, email) {
-    try {
-      const client = await this.create({
-        name,
-        lastName,
-        egn,
-        phoneNumber,
-        email,
-      });
-      return client;
-    } catch (error) {
-      throw error;
-    }
-  };
+Client.createClient = async function (name, lastName, phoneNumber, email, isAdult) {
+  try {
+    const client = await this.create({
+      name,
+      lastName,
+      phoneNumber,
+      email,
+      isAdult
+    });
+
+    return client;
+  } catch (error) {
+    throw error;
+  }
+};
 
 module.exports = Client;
