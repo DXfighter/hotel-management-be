@@ -2,12 +2,10 @@ const express = require('express');
 const router = express.Router();
 const RegisteredUser = require('../models/User.js');
 
-// Маршрут за регистрация на нов потребител
 router.post('/register', async (req, res) => {
   try {
-    const { username, password,name, middleName, lastName } = req.body;
+    const { username, password, name, middleName, lastName, egn, phoneNumber, email, startWorkDate, isActive} = req.body;
 
-    // Проверка дали потребител с този потребителско име вече съществува
     const existingUser = await RegisteredUser.findOne({
       where: {
         username: username
@@ -18,8 +16,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Потребител с това име вече съществува' });
     }
 
-    // Създаване на нов потребител в базата данни
-    const newUser = await RegisteredUser.createUser(username, password,name, middleName, lastName);
+    const newUser = await RegisteredUser.createUser(username, password, name, middleName, lastName, egn, phoneNumber, email, startWorkDate, isActive);
 
     res.status(201).json({ message: 'Регистрацията беше успешна' });
   } catch (error) {
@@ -31,11 +28,11 @@ router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Проверка в базата данни дали има потребител с това потребителско име и парола
     const user = await RegisteredUser.findOne({
       where: {
         username: username,
-        password: password
+        password: password,
+        isActive: true
       }
     });
 

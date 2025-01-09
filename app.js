@@ -23,7 +23,6 @@ sequelize.sync({ alter: true }).then(() => {
   console.log('Базата данни и таблицата са създадени успешно.');
 
   const createAdmin = async () => {
-    // Първоначално създаване на потребители
     if ( ! await User.findOne({ where: { username: 'admin' } }) ) {
       await User.create({
         username: 'admin',
@@ -100,6 +99,124 @@ app.post('/api/registerRoom', async (req, res) => {
   }
 });
 
+app.post('/api/editRoom', async (req, res) => {
+  try {
+    const { number, capacity, type, priceAdult, priceChild } = req.body;
+
+    const existingRoom = await Room.findOne({
+      where: {
+        number
+      }
+    });
+
+    if (!existingRoom) {
+      res.status(404).json({ error: 'Стаята не е намерена' });
+    }
+
+    Room.update({
+      capacity,
+      type,
+      priceAdult,
+      priceChild
+    }, {
+      where: {
+        number
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({ error: 'Грешка при редактиране на стаята' });
+  }
+});
+
+app.post('/api/editUser', async (req, res) => {
+  try {
+    const { id, username, name, middleName, lastName, egn, phoneNumber, email, startWorkDate, endWorkDate, isActive } = req.body;
+
+    const existingUser = await User.findOne({
+      where: {
+        id
+      }
+    });
+
+    if (!existingUser) {
+      res.status(404).json({ error: 'Потребителя не е намерен' });
+    }
+
+    User.update({
+      username,
+      name,
+      middleName,
+      lastName, 
+      egn,
+      phoneNumber,
+      email,
+      startWorkDate,
+      isActive,
+      endWorkDate
+    }, {
+      where: {
+        id
+      }
+    })
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({ error: 'Грешка при редактиране на потребителя' });
+  }
+});
+
+const { Op } = require('sequelize');
+app.post('/api/getAvailableRooms', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    // Find rooms that do not have reservations overlapping with the requested dates
+    const unavailableRooms = await Reservation.findAll({
+      where: {
+        [Op.or]: [
+          {
+            startDate: {
+              [Op.between]: [startDate, endDate],
+            },
+          },
+          {
+            endDate: {
+              [Op.between]: [startDate, endDate],
+            },
+          },
+          {
+            startDate: {
+              [Op.lte]: startDate,
+            },
+            endDate: {
+              [Op.gte]: endDate,
+            },
+          },
+        ],
+      },
+      attributes: ['room'],
+    });
+
+    const unavailableRoomIds = unavailableRooms.map(reservation => reservation.room);
+
+    // Find all rooms that are not in the unavailableRoomIds
+    const availableRooms = await Room.findAll({
+      where: {
+        id: {
+          [Op.notIn]: unavailableRoomIds,
+        },
+      },
+    });
+
+    res.json(availableRooms);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching available rooms' });
+  }
+});
 app.post('/api/createReservation', async (req, res) => {
   try {
     const { clients, room, user, includeBreakfast, allInclusive, startDate, endDate } = req.body;
@@ -125,6 +242,23 @@ app.post('/api/getRooms', async (req, res) => {
   try {
     const rooms = await Room.findAll();
     res.json(rooms);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({ error: 'Грешка при получаване на стаите' });
+  }
+});
+
+app.post('/api/getUsers', async (req, res) => {
+  try {
+    const users = await User.findAll({
+      where: {
+        [Op.not]: {
+          role: 'admin'
+        }
+      }
+    });
+    res.json(users);
   } catch (error) {
     console.error(error);
 
