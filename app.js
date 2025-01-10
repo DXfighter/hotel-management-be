@@ -289,6 +289,30 @@ app.post('/api/getReservations', async (req, res) => {
   }
 });
 
+app.post('/api/deleteRoom', async (req, res) => {
+  try {
+    const { roomNumber } = req.body;
+
+    const room = await Room.findOne({
+      where: {
+        number: roomNumber
+      }
+    });
+
+    if (!room) {
+      return res.status(404).json({ error: 'Стаята не е намерена' });
+    }
+
+    await room.destroy();
+
+    return res.json({ message: 'Стаята е изтрита успешно' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Грешка при изтриване на стаята' });
+  }
+});
+
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
